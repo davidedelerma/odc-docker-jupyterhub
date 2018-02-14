@@ -1,0 +1,60 @@
+version: "2"
+
+services:
+  jupyterhub:
+    container_name: jupyterhub
+    networks:
+      - default
+    restart: "no"
+    env_file:
+      - ./config/oauth.env
+    environment:
+      DOCKER_NOTEBOOK_IMAGE: 'datacube-notebook'
+    build:
+      context: .
+      dockerfile: Dockerfile.jupyterhub
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:rw"
+      - "state-volume:/data"
+    command: >
+      jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
+
+  nginx-proxy:
+    container_name: jupyerhub-nginx
+    depends_on:
+      - jupyterhub
+    networks:
+      - default
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    env_file:
+      - ./config/common.env
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "letsencrypt-volume:/etc/letsencrypt"
+
+  datacube-db:
+    image: postgres:9.5
+    container_name: jupyterhub-db
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: todo_generate_me
+      POSTGRES_DB: datacube
+      PGDATA: /var/lib/postgres/data
+    volumes:
+      - "datacube-db-volume:/var/lib/postgres/data"
+
+
+volumes:
+   letsencrypt-volume:
+   state-volume:
+   datacube-db-volume:
+
+networks:
+  default:
+    external:
+      name: jupyterhub

@@ -1,0 +1,15 @@
+FROM alpine
+MAINTAINER Kirill Kouzoubov
+
+RUN apk update &&\
+    apk add nginx git &&\
+    apk add python3 py3-cffi py3-openssl &&\
+    pip3 install certbot &&\
+    pip3 install git+https://github.com/Kirill888/jhub-nginx-vhost.git
+
+ADD ./launch-proxy.sh /root/launch-proxy.sh
+ADD ./config/jhub-vhost.yml /etc/
+
+EXPOSE 80 443
+
+CMD ["/root/launch-proxy.sh"]
