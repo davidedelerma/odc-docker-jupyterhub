@@ -1,13 +1,7 @@
 all: datacube-notebook
 
-geo-base: Dockerfile.geo
-	docker build -t $@ --file $< .
-
-geo-jupyter: Dockerfile.geo-jupyter geo-base
-	docker build -t $@ --file $< .
-
-datacube-notebook: Dockerfile.datacube geo-jupyter
-	docker build -t $@ --file $< .
+datacube-notebook:
+	make -C datacube-notebook
 
 docker-bootstrap:
 	@echo "Checking/creating networks"
@@ -23,4 +17,4 @@ clean-orphans:
 	@echo "Cleaning up orphaned images"
 	@docker images | grep "<none>" | awk '{print $3}' | xargs docker rmi
 
-.PHONY: all geo-jupyter geo-base datacube-notebook docker-bootstrap update-config-volume
+.PHONY: all datacube-notebook docker-bootstrap update-config-volume
