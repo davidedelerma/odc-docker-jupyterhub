@@ -5,9 +5,12 @@ ENV DATACUBE_VERSION=develop
 ENV LC_ALL=C.UTF-8
 ENV LANG="$LC_ALL"
 
+# Deal with psycopg2 binary warning
+RUN pip3 install --no-cache --no-binary :all: psycopg2
+
 ## Datacube
 
-RUN pip3 install --no-cache --upgrade \
+RUN pip3 install --no-cache \
     'git+https://github.com/opendatacube/datacube-core.git@'"${DATACUBE_VERSION}"'#egg=datacube[s3,test]'
 
 # clean up
