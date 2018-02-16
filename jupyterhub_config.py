@@ -3,22 +3,18 @@ import os
 c = get_config()
 
 network_name = "jupyterhub"
-notebook_dir = '/home/jovyan/work'
 spawn_cmd = "launch-singleuser.sh"
 
 c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
 c.DockerSpawner.container_image = os.environ['DOCKER_NOTEBOOK_IMAGE']
 c.DockerSpawner.network_name = network_name
 c.DockerSpawner.extra_host_config = { 'network_mode': network_name }
-c.DockerSpawner.notebook_dir = notebook_dir
 c.DockerSpawner.debug = True
 c.DockerSpawner.volumes = {
-    'jupyterhub-user-{username}': notebook_dir,
+    'jupyterhub-user-{username}': "/home/",
 }
 c.DockerSpawner.read_only_volumes = {
-    '/home/ec2-user/jhub/config/datacube.conf': '/home/jovyan/.datacube.conf',
-    '/home/ec2-user/jhub/config/aws_credentials': '/home/jovyan/.aws/credentials',
-    'datacube-examples-volume' : '/examples',
+    'datacube-config-volume' : '/external',
 }
 c.DockerSpawner.cmd = spawn_cmd
 c.DockerSpawner.remove_containers = True

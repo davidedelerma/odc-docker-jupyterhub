@@ -1,13 +1,14 @@
 FROM alpine
 MAINTAINER Kirill Kouzoubov
 
-RUN apk update &&\
-    apk add python3 linux-pam nodejs nodejs-npm docker &&\
+RUN apk update && \
+    apk add python3 linux-pam nodejs nodejs-npm docker && \
     pip3 install --no-cache-dir\
-     jupyterhub \
-     dockerspawner \
-     oauthenticator &&\
-    npm install -g configurable-http-proxy
+      jupyterhub \
+      dockerspawner \
+      oauthenticator && \
+    npm install -g configurable-http-proxy &&  \
+    npm cache clean --force
 
 ADD ./config/userlist /srv/jupyterhub/
 ADD ./jupyterhub_config.py /srv/jupyterhub/

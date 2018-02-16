@@ -1,0 +1,17 @@
+#!/bin/sh
+
+SKELETON="/external/skeleton.tgz"
+
+if [ -z "$(ls -A ${HOME})" ]; then
+    if [ -e "${SKELETON}" ]; then
+        echo "${HOME} is empty, bootstrapping from ${SKELETON}"
+        tar xvf "${SKELETON}" -C "${HOME}"
+    fi
+
+    # pre-populate matplotlib cache
+    MPLBACKEND=Agg python3 -c "import matplotlib.pyplot" 2> /dev/null > /dev/null
+fi
+
+hash gdal-config 2> /dev/null && export GDAL_DATA="$(gdal-config --datadir)"
+
+exec "$@"
